@@ -3,7 +3,7 @@
   "name": "Go Back With Backspace",
   "description": "Re-enables the backspace key as a back navigation button in Microsoft Edge (except when writing text).",
   "default_locale": "en",
-  "version": "2.1.2.0",
+  "version": "2.1.3.0",
   "manifest_version": 2,
   "icons": {
      "16": "icons/icon16.png",
