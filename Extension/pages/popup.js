@@ -38,9 +38,13 @@ function setStatus(message_id, placeholder) {
 function init() {
   loadInternationalizedStrings();
 
-  $('feedback-link').onclick = function() {
-  sendFeedback(url);
-  };
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabList) {
+    var url = tabList[0].url;
+
+    $('feedback-link').onclick = function() {
+      sendFeedback(url);
+    };
+  });
 }
 
 window.addEventListener('load', init);
