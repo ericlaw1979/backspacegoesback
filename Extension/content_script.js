@@ -2,32 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Load the options, then register a keyboard listener.  We capture the event
+// Register a keyboard listener.  We capture the event
 // at the Window to let any handlers or listeners registered on the Document
 // have a chance to handle it first.
-var options;
 let chrome=browser;
 
-chrome.storage.sync.get({
-  blacklist: [],
-  disableInApplets: true,
-  whitelist: []
-}, function(items) {
-  options = items;
-  window.addEventListener('keydown', handleBackspace);
-});
-
-// Update the local options when they're changed externally.
-chrome.storage.onChanged.addListener(function(changes, area) {
-  if (area === 'sync') {
-    if (changes.blacklist)
-      options.blacklist = changes.blacklist.newValue;
-    if (changes.disableInApplets)
-      options.disableInApplets = changes.disableInApplets.newValue;
-    if (changes.whitelist)
-      options.whitelist = changes.whitelist.newValue;
-  }
-});
+window.addEventListener('keydown', handleBackspace);
 
 // Check for shift-backspace or unmodified backspace and navigate if
 // applicable.
@@ -40,12 +20,8 @@ function handleBackspace(e) {
       window.history.length < 2) // Nowhere to go back or forward to anyway.
     return;
 
-  // The blacklist, either the whole URL or a wildcard, overrides everything.
-  if (listIncludesCurrentUrl(options.blacklist))
-    return;
-
   var target = e.target; // Edge doesn't support .composedPath()[0];
-  if (disabledInApplet(target))
+  if (isApplet(target))
     return;
   if (isEditable(target))
     return;
@@ -73,28 +49,8 @@ function handleBackspace(e) {
   }
 }
 
-// Returns true if the given black- or whitelist (array) includes the current
-// URL, either as a full URL or with a wildcarded trailing path.
-function listIncludesCurrentUrl(list) {
-  const url = window.location.href;
-  for (const entry of list) {
-    if (entry == url) {
-      return true;
-    } else if (entry.endsWith('/*') &&
-               url.startsWith(entry.substring(0, entry.length - 1))) {
-      return true;
-    }
-  }
-  return false;
-}
-
-// Return true if the option to disable the extension in applets is enabled,
-// focus is in an embedded Flash or Java applet, and the current page is not
-// in the whitelist of pages for which that should not apply.
-function disabledInApplet(target) {
-  if (!options.disableInApplets || listIncludesCurrentUrl(options.whitelist))
-    return false;
-
+// Return true if focus is in an embedded Flash/Java/PDF/etc applet.
+function isApplet(target) {
   var nodeName = target.nodeName.toUpperCase();
   var nodeType = target.type || '';
   nodeType = nodeType.toLowerCase();

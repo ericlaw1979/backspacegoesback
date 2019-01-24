@@ -8,7 +8,7 @@
   <Identity
     Name="28920BaydenSystems.GoBackWithBackspace"
     Publisher="CN=C5A1E3F5-4E68-482C-A96A-256D67665C22"
-    Version="2.1.1.0"/>
+    Version="2.1.3.0"/>
 
   <Properties>
     <DisplayName>Go Back With Backspace</DisplayName>
